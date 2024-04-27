@@ -7,40 +7,33 @@ public class Project_Pattern {
         // Create an instance of the online learning platform
         Platform platform = new Platform();
 
-        // Create the Java course factory
-        CourseFactory javaCourseFactory = new JavaCourseFactory();
+        // Create the Java programming course
+        Course javaCourse = new JavaProgrammingCourse("Java Programming", "Learn Java from scratch");
 
-        // Create some courses using the factory
-        Course course1 = javaCourseFactory.createCourse("Java Programming", "Learn Java from scratch");
+        // Decorate the Java course with additional functionality
+        CourseDecorator decoratedJavaCourse = new AdditionalFunctionalityDecorator(javaCourse);
 
-        // Create the web development course factory
-        CourseFactory webCourseFactory= new WebCourseFactory();
+        // Create the web development course
+        Course webDevCourse = new WebDevelopmentCourse("Web Development", "Learn web development");
 
-        // Create some courses using the factory
-        Course course2 = webCourseFactory.createCourse("Web Development", "Build modern web applications");
+        // Create a composite course and add the Java and web development courses as sub-courses
+        CompositeCourse compositeCourse = new CompositeCourse("Composite Course", "A composite course");
+        compositeCourse.addSubCourse(decoratedJavaCourse);
+        compositeCourse.addSubCourse(webDevCourse);
 
-        // Create some users
-        User user1 = new User("Jomanah", "jomanah.doe@example.com", false);
-        User user2 = new User("Jane", "jana.smith@example.com", true);
-
-        // Enroll users in courses
-        Enrollment enrollment1 = new Enrollment(course1, user1);
-        Enrollment enrollment2 = new Enrollment(course2, user2);
-
-        // Add courses, users, and enrollments to the platform
-        platform.addCourse(course1);
-        platform.addCourse(course2);
-        platform.addUser(user1);
-        platform.addUser(user2);
-        platform.addEnrollment(enrollment1);
-        platform.addEnrollment(enrollment2);
+        // Add the composite course to the platform
+        platform.addCourse(compositeCourse);
 
         // Get all courses from the platform
         List<Course> allCourses = platform.getAllCourses();
 
-        // Display course titles
+        // Print the titles and descriptions of all courses
         for (Course course : allCourses) {
             System.out.println("Course Title: " + course.getTitle());
+            System.out.println("Course Description: " + course.getDescription());
+            if (course instanceof CourseDecorator) {
+                ((CourseDecorator) course).additionalMethod();
+            }
         }
     }
 }

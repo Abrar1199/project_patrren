@@ -3,60 +3,112 @@ package project_patrren;
 import java.util.ArrayList;
 import java.util.List;
 
-// Abstract class representing a course
-abstract class Course {
+// Course interface
+interface Course {
+    String getTitle();
+    String getDescription();
+}
+
+// Composite implementation of a course that can contain sub-courses
+class CompositeCourse implements Course {
     private final String title;
     private final String description;
-    private final List<Video> videos;
-    private final List<Quiz> quizzes;
-    private final List<Assignment> assignments;
+    private final List<Course> subCourses;
 
-    public Course(String title, String description) {
+    public CompositeCourse(String title, String description) {
         this.title = title;
         this.description = description;
-        this.videos = new ArrayList<>();
-        this.quizzes = new ArrayList<>();
-        this.assignments = new ArrayList<>();
+        this.subCourses = new ArrayList<>();
     }
 
+    public void addSubCourse(Course subCourse) {
+        subCourses.add(subCourse);
+    }
+
+    public void removeSubCourse(Course subCourse) {
+        subCourses.remove(subCourse);
+    }
+
+    @Override
     public String getTitle() {
         return title;
     }
 
-    // Methods for managing videos, quizzes, and assignments within the course
-    // ...
+    @Override
+    public String getDescription() {
+        return description;
+    }
 }
 
 // Concrete implementation of a Java programming course
-class JavaProgrammingCourse extends Course {
+class JavaProgrammingCourse implements Course {
+    private final String title;
+    private final String description;
+
     public JavaProgrammingCourse(String title, String description) {
-        super(title, description);
+        this.title = title;
+        this.description = description;
+    }
+
+    @Override
+    public String getTitle() {
+        return title;
+    }
+
+    @Override
+    public String getDescription() {
+        return description;
     }
 }
 
 // Concrete implementation of a web development course
-class WebDevelopmentCourse extends Course {
+class WebDevelopmentCourse implements Course {
+    private final String title;
+    private final String description;
+
     public WebDevelopmentCourse(String title, String description) {
-        super(title, description);
+        this.title = title;
+        this.description = description;
+    }
+
+    @Override
+    public String getTitle() {
+        return title;
+    }
+
+    @Override
+    public String getDescription() {
+        return description;
     }
 }
 
-// Abstract factory interface for creating courses
-interface CourseFactory {
-    Course createCourse(String title, String description);
+// Decorator interface for courses
+interface CourseDecorator extends Course {
+    // Additional methods to enhance the course functionality
+    void additionalMethod();
 }
 
-// Concrete factory class for creating Java programming courses
-class JavaCourseFactory implements CourseFactory {
-    public Course createCourse(String title, String description) {
-        return new JavaProgrammingCourse(title, description);
+// Concrete decorator that adds additional functionality to a course
+class AdditionalFunctionalityDecorator implements CourseDecorator {
+    private final Course decoratedCourse;
+
+    public AdditionalFunctionalityDecorator(Course decoratedCourse) {
+        this.decoratedCourse = decoratedCourse;
     }
-}
 
-// Concrete factory class for creating web development courses
-class WebCourseFactory implements CourseFactory {
-    public Course createCourse(String title, String description) {
-        return new WebDevelopmentCourse(title, description);
+    @Override
+    public String getTitle() {
+        return decoratedCourse.getTitle();
+    }
+
+    @Override
+    public String getDescription() {
+        return decoratedCourse.getDescription();
+    }
+
+    @Override
+    public void additionalMethod() {
+        // Additional functionality implementation
     }
 }
 
@@ -111,7 +163,6 @@ class Assignment {
     private final String title;
     private final String description;
     private final String submissionUrl;
-
     public Assignment(String title, String description, String submissionUrl) {
         this.title = title;
         this.description = description;
@@ -160,11 +211,10 @@ class Platform {
         enrollments.add(enrollment);
     }
 
-    public List<Course> getAllCourses() {
+    public List<Course>getAllCourses() {
         return courses;
     }
 
     // Methods for managing courses, users, and enrollments on the platform
     // ...
-
 }
