@@ -23,7 +23,20 @@ public class Project_Pattern {
 
         // Add the composite course to the platform
         platform.addCourse(compositeCourse);
-
+        Command addCourseCommand = new AddCourseCommand(platform, javaCourse);
+        Command removeCourseCommand = new RemoveCourseCommand(platform, javaCourse);
+        
+        // Execute the addCourseCommand
+        platform.executeCommand(addCourseCommand);
+        
+        // ... Perform other operations on the platform, such as enrolling users, etc.
+        
+        // Execute the removeCourseCommand
+        platform.executeCommand(removeCourseCommand);
+        
+        // Undo the last executed command (if supported)
+      
+    
         // Create users
         User user1 = new User("John", "john@example.com", false);
         User user2 = new User("Jane", "jane@example.com", false);
@@ -59,4 +72,5 @@ public class Project_Pattern {
         // Notify users about the course update
         compositeCourse.notifyObservers();
     }
+    
 }

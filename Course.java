@@ -14,6 +14,40 @@ interface CourseSubject {
     void notifyObservers();
 }
 
+interface Command {
+    void execute();
+}
+
+class AddCourseCommand implements Command {
+    private final Platform platform;
+    private final Course course;
+
+    public AddCourseCommand(Platform platform, Course course) {
+        this.platform = platform;
+        this.course = course;
+    }
+
+    @Override
+    public void execute() {
+        platform.addCourse(course);
+    }
+}
+
+class RemoveCourseCommand implements Command {
+    private final Platform platform;
+    private final Course course;
+
+    public RemoveCourseCommand(Platform platform, Course course) {
+        this.platform = platform;
+        this.course = course;
+    }
+
+    @Override
+    public void execute() {
+        platform.removeCourse(course);
+    }
+}
+
 class CompositeCourse implements Course, CourseSubject {
     private final String title;
     private final String description;
@@ -276,7 +310,9 @@ class Platform {
     public List<Course> getAllCourses() {
         return courses;
     }
-
+    public void executeCommand(Command command) {
+        command.execute();
+    }
     private List<UserObserver> getAllObservers() {
         List<UserObserver> observers = new ArrayList<>();
         for (Enrollment enrollment : enrollments) {
