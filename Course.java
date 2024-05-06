@@ -8,17 +8,23 @@ interface Course {
     String getTitle();
     String getDescription();
 }
+interface CourseSubject {
+    void registerObserver(UserObserver observer);
+    void removeObserver(UserObserver observer);
+    void notifyObservers();
+}
 
-// Composite implementation of a course that can contain sub-courses
-class CompositeCourse implements Course {
+class CompositeCourse implements Course, CourseSubject {
     private final String title;
     private final String description;
     private final List<Course> subCourses;
+    private final List<UserObserver> observers;
 
     public CompositeCourse(String title, String description) {
         this.title = title;
         this.description = description;
         this.subCourses = new ArrayList<>();
+        this.observers = new ArrayList<>();
     }
 
     public void addSubCourse(Course subCourse) {
@@ -38,6 +44,27 @@ class CompositeCourse implements Course {
     public String getDescription() {
         return description;
     }
+
+    @Override
+    public void registerObserver(UserObserver observer) {
+        observers.add(observer);
+    }
+
+    @Override
+    public void removeObserver(UserObserver observer) {
+        observers.remove(observer);
+    }
+
+    @Override
+    public void notifyObservers() {
+        for (UserObserver observer : observers) {
+            observer.updateCourse(this);
+        }
+    }
+}
+
+interface UserObserver {
+    void updateCourse(CourseSubject subject);
 }
 
 // Concrete implementation of a Java programming course
@@ -113,7 +140,7 @@ class AdditionalFunctionalityDecorator implements CourseDecorator {
 }
 
 // User class represents a user (student or instructor) of the platform
-class User {
+class User  implements UserObserver {
     private final String username;
     private final String email;
     private final boolean isInstructor;
@@ -122,6 +149,11 @@ class User {
         this.username = username;
         this.email = email;
         this.isInstructor = isInstructor;
+    }
+    @Override
+    public void updateCourse(CourseSubject subject) {
+        // Handle the course update notification
+        // You can define the specific behavior here, such as sending an email or displaying a notification to the user.
     }
 
     // Methods for managing user profile and authentication
@@ -183,9 +215,15 @@ class Enrollment {
         this.user = user;
     }
 
-    // Methods for managing course enrollment and access
-    // ...
+    public Course getCourse() {
+        return course;
+    }
+
+    public User getUser() {
+        return user;
+    }
 }
+
 
 // Platform class represents the online learning platform itself, managing courses, users, and enrollments
 class Platform {
@@ -201,20 +239,52 @@ class Platform {
 
     public void addCourse(Course course) {
         courses.add(course);
+        if (course instanceof CourseSubject) {
+            List<UserObserver> allObservers = getAllObservers();
+            for (UserObserver observer : allObservers) {
+                ((CourseSubject) course).registerObserver(observer);
+            }
+        }
+    }
+
+    public void removeCourse(Course course) {
+        courses.remove(course);
+        if (course instanceof CourseSubject) {
+            List<UserObserver> allObservers = getAllObservers();
+            for (UserObserver observer : allObservers) {
+                ((CourseSubject) course).removeObserver(observer);
+            }
+        }
     }
 
     public void addUser(User user) {
         users.add(user);
     }
 
+    public void removeUser(User user) {
+        users.remove(user);
+    }
+
     public void addEnrollment(Enrollment enrollment) {
         enrollments.add(enrollment);
     }
 
-    public List<Course>getAllCourses() {
+    public void removeEnrollment(Enrollment enrollment) {
+        enrollments.remove(enrollment);
+    }
+
+    public List<Course> getAllCourses() {
         return courses;
     }
 
-    // Methods for managing courses, users, and enrollments on the platform
-    // ...
+    private List<UserObserver> getAllObservers() {
+        List<UserObserver> observers = new ArrayList<>();
+        for (Enrollment enrollment : enrollments) {
+            Course course = enrollment.getCourse();
+            if (course instanceof UserObserver) {
+                observers.add((UserObserver) course);
+            }
+        }
+        return observers;
+    }
 }

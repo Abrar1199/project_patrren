@@ -24,6 +24,22 @@ public class Project_Pattern {
         // Add the composite course to the platform
         platform.addCourse(compositeCourse);
 
+        // Create users
+        User user1 = new User("John", "john@example.com", false);
+        User user2 = new User("Jane", "jane@example.com", false);
+        User instructor = new User("Instructor", "instructor@example.com", true);
+
+        // Add users to the platform
+        platform.addUser(user1);
+        platform.addUser(user2);
+        platform.addUser(instructor);
+
+        // Enroll users in the composite course
+        Enrollment enrollment1 = new Enrollment(compositeCourse, user1);
+        Enrollment enrollment2 = new Enrollment(compositeCourse, user2);
+        platform.addEnrollment(enrollment1);
+        platform.addEnrollment(enrollment2);
+
         // Get all courses from the platform
         List<Course> allCourses = platform.getAllCourses();
 
@@ -35,5 +51,12 @@ public class Project_Pattern {
                 ((CourseDecorator) course).additionalMethod();
             }
         }
+
+        // Simulate a course update
+        compositeCourse.removeSubCourse(webDevCourse);
+        compositeCourse.addSubCourse(new JavaProgrammingCourse("Advanced Java Programming", "Learn advanced Java concepts"));
+
+        // Notify users about the course update
+        compositeCourse.notifyObservers();
     }
 }
